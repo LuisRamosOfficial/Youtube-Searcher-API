@@ -1,10 +1,13 @@
 from modules import get_JsonSearch
 from flask import *
 import json, time, urllib.parse
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/', methods=['GET'])
+@cross_origin()
 def home_page():
     objected = {"page": "Page is succesfully loaded", "time": time.time()}
     
@@ -15,6 +18,7 @@ def home_page():
 # Search youtube videos API Endpoint
 
 @app.route('/search')
+@cross_origin()
 def request_page():
     search_query = str(request.args.get('q'))
     

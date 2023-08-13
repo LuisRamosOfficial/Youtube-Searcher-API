@@ -1,130 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Video Search API</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-        }
-        p {
-            color: #666;
-        }
-        .search-form {
-            margin-top: 20px;
-        }
-        .search-input {
-            width: 70%;
-            padding: 10px;
-        }
-        .search-button {
-            padding: 10px 20px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-        .search-button:hover {
-            background-color: #555;
-        }
-        .raw-response {
-            margin-top: 20px;
-        }
-        .raw-response-button {
-            padding: 5px 10px;
-            background-color: #888;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-        .raw-response-button:hover {
-            background-color: #aaa;
-        }
-        pre {
-            white-space: pre-wrap;
-            background-color: #eee;
-            padding: 10px;
-            margin-top: 10px;
-            text-align: left;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>YouTube Video Search API</h1>
-        <p>Search and discover YouTube videos using our API!</p>
-        <form class="search-form" id="searchForm">
-            <input type="text" class="search-input" id="searchQuery" placeholder="Enter your search query">
-            <button type="submit" class="search-button">Search</button>
-        </form>
-        <div id="results"></div>
-        <div class="raw-response" id="rawResponseDiv" style="display: none;">
-            <button class="raw-response-button" id="rawResponseButton">View Raw Response</button>
-            <pre id="rawResponse"></pre>
-        </div>
-    </div>
-
-    <script>
-        const searchForm = document.getElementById('searchForm');
-        const searchQuery = document.getElementById('searchQuery');
-        const resultsDiv = document.getElementById('results');
-        const rawResponseDiv = document.getElementById('rawResponseDiv');
-        const rawResponseButton = document.getElementById('rawResponseButton');
-        const rawResponse = document.getElementById('rawResponse');
-
-        searchForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            resultsDiv.innerHTML = '';
-            rawResponseDiv.style.display = 'none';
-
-            const query = searchQuery.value;
-
-            if (query) {
-                try {
-                    const response = await fetch(`http://127.0.0.1:4040/search?q=${query}`);
-                    const data = await response.json();
-
-                    if (data) {
-                        data.forEach(item => {
-                            const videoId = item.url;
-                            const videoTitle = item.title;
-                            const videoThumbnail = item.thumbnail;
-
-                            const resultDiv = document.createElement('div');
-                            resultDiv.innerHTML = `
-                                <a href="${videoId}" target="_blank">
-                                    <img src="${videoThumbnail}" alt="${videoTitle}">
-                                    <h2>${videoTitle}</h2>
-                                </a>
-                            `;
-                            resultsDiv.appendChild(resultDiv);
-                        });
-
-                        rawResponseButton.addEventListener('click', () => {
-                            rawResponse.textContent = JSON.stringify(data, null, 2);
-                            rawResponseDiv.style.display = 'block';
-                        });
-                    } else {
-                        resultsDiv.innerHTML = '<p>No results found.</p>';
-                    }
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
+	<head>
+		<style>
+            * {
+                margin: 0;
+                padding: 0;
+                
             }
-        });
+			body {
+                overflow-x: hidden;
+                font-family: 'Lexend', sans-serif;
+				width: 100vw;
+				min-height: 100vh;
+				display: flex;
+				align-items: center;
+				flex-direction: column;
+                
+			}
+            h1 {
+                width: 100%;
+                text-align: center;
+                margin-top: 3rem;
+                font-weight: 800;
+                font-size: 3rem;
+            }
+            h6 {
+                margin-top: 2rem;
+                width: 70%;
+                font-weight: 200;
+                font-size: 1.5rem;
+                text-align: justify;
+            }
+            form {
+                justify-content: space-between;
+                margin-top: 8rem;
+                width: 40vw;
+                display: flex;
+            }
+            form input {
+                outline: none;
+                border: none;
+                font-size: 1.1rem;
+                border: 1px solid rgb(151, 151, 151);
+                padding: 1.5rem;
+                width: 70%;
+                border-radius: 40px;
+                background-color: rgb(247, 247, 247);
+            }
+            form button {
+                background-image: url('https://cdn-icons-png.flaticon.com/512/3031/3031293.png');
+                background-size: 70%;
+                background-repeat: no-repeat;
+                background-color: rgb(226, 226, 226);
+                background-position: center;
+                outline: none;
+                border:1px solid rgb(198, 198, 198);
+                border-radius: 40px;
+                aspect-ratio: 1/1;
+                cursor: pointer;
+                transition: transform 200ms ease-out;
+            }
+            form button:hover {
+                transform: scale(1.1);
+            }
+            ul.searchlist {
+                margin-top: 3rem;
+                width: 90vw;
+                justify-content: center;
+                display: flex;
+                gap: 5rem;
+                flex-wrap: wrap;
+            }
+             ul div {
+                cursor: pointer;
+                transition: transform 150ms ease-out;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: clamp(18rem, 28%, 23rem);
+             }
+
+             ul div:hover {
+                transform: scale(1.05);
+             }
+             ul div:active {
+                transform: scale(0.95);
+             }
+
+             ul div h5 {
+                width: 100%;
+                font-weight: 200;
+                font-size: 1rem;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+                
+             }
+             ul div img {
+                border-radius: 30px;
+                width: 100%;
+             }
+             ul div span {
+                width: 100%;
+             }
+             
+
+		</style>
+		<meta charset="UTF-8" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Lexend:wght@100;200;300;400;500;600;700;800;900&display=swap"
+			rel="stylesheet"
+		/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Youtube Search API</title>
+	</head>
+	<body>
+		<h1>Youtube Search API</h1>
+        <h6>Welcome to your go-to solution for effortless YouTube video searches through our streamlined API. Created with developers in mind, our API specializes in enabling hassle-free integration of YouTube video searches using straightforward queries.</h6>
+        <form id="searchform">
+            <input id="searchquery" />
+            <button type="submit"></button>
+        </form>
+        <ul class="searchlist"></ul>
+    </body>
+    <script>
+        const SearchForm = document.querySelector('#searchform')
+        const SearchInput = document.querySelector('#searchquery')
+        const SearchList = document.querySelector('.searchlist')
+
+        SearchForm.addEventListener('submit', async (e) => {
+            e.preventDefault()
+            const Response = await fetch(`http://127.0.0.1:4040/search?q=${SearchInput.value}`)
+            const Data = await Response.json()
+            console.log(Data)
+            Data.forEach(object => {
+                const ListItem = document.createElement('div')
+                ListItem.addEventListener('click', () => {
+                    e.preventDefault()
+                    window.open(object.url, '_blank');
+                })
+                ListItem.innerHTML = `
+                <h5>${object.title}</p>
+                <img src="${object.thumbnail}"/>
+                <span>
+                    <p>${object.date}</p>
+                    <p>${object.length}</p>
+                    <p>${object.views}</p>
+                </span>
+                `
+                SearchList.appendChild(ListItem)
+            });
+        })
     </script>
-</body>
 </html>
