@@ -57,4 +57,4 @@ def get_JsonSearch(url):
                                })
 
     video_json = json.dumps(video_list, indent=4)
-    return video_json
+    return video_list

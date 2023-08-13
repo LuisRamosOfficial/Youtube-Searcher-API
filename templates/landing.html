@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Search API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #666;
+        }
+        .search-form {
+            margin-top: 20px;
+        }
+        .search-input {
+            width: 70%;
+            padding: 10px;
+        }
+        .search-button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .search-button:hover {
+            background-color: #555;
+        }
+        .raw-response {
+            margin-top: 20px;
+        }
+        .raw-response-button {
+            padding: 5px 10px;
+            background-color: #888;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .raw-response-button:hover {
+            background-color: #aaa;
+        }
+        pre {
+            white-space: pre-wrap;
+            background-color: #eee;
+            padding: 10px;
+            margin-top: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Video Search API</h1>
+        <p>Search and discover YouTube videos using our API!</p>
+        <form class="search-form" id="searchForm">
+            <input type="text" class="search-input" id="searchQuery" placeholder="Enter your search query">
+            <button type="submit" class="search-button">Search</button>
+        </form>
+        <div id="results"></div>
+        <div class="raw-response" id="rawResponseDiv" style="display: none;">
+            <button class="raw-response-button" id="rawResponseButton">View Raw Response</button>
+            <pre id="rawResponse"></pre>
+        </div>
+    </div>
+
+    <script>
+        const searchForm = document.getElementById('searchForm');
+        const searchQuery = document.getElementById('searchQuery');
+        const resultsDiv = document.getElementById('results');
+        const rawResponseDiv = document.getElementById('rawResponseDiv');
+        const rawResponseButton = document.getElementById('rawResponseButton');
+        const rawResponse = document.getElementById('rawResponse');
+
+        searchForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            resultsDiv.innerHTML = '';
+            rawResponseDiv.style.display = 'none';
+
+            const query = searchQuery.value;
+
+            if (query) {
+                try {
+                    const response = await fetch(`http://127.0.0.1:4040/search?q=${query}`);
+                    const data = await response.json();
+
+                    if (data) {
+                        data.forEach(item => {
+                            const videoId = item.url;
+                            const videoTitle = item.title;
+                            const videoThumbnail = item.thumbnail;
+
+                            const resultDiv = document.createElement('div');
+                            resultDiv.innerHTML = `
+                                <a href="${videoId}" target="_blank">
+                                    <img src="${videoThumbnail}" alt="${videoTitle}">
+                                    <h2>${videoTitle}</h2>
+                                </a>
+                            `;
+                            resultsDiv.appendChild(resultDiv);
+                        });
+
+                        rawResponseButton.addEventListener('click', () => {
+                            rawResponse.textContent = JSON.stringify(data, null, 2);
+                            rawResponseDiv.style.display = 'block';
+                        });
+                    } else {
+                        resultsDiv.innerHTML = '<p>No results found.</p>';
+                    }
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
