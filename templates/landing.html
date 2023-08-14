@@ -63,6 +63,9 @@
             form button:hover {
                 transform: scale(1.1);
             }
+            ul img {
+                width: 30%;
+            }
             ul.searchlist {
                 margin-top: 3rem;
                 width: 90vw;
@@ -70,6 +73,7 @@
                 display: flex;
                 gap: 5rem;
                 flex-wrap: wrap;
+                margin-bottom: 3rem;
             }
              ul div {
                 cursor: pointer;
@@ -132,8 +136,10 @@
 
         SearchForm.addEventListener('submit', async (e) => {
             e.preventDefault()
+            SearchList.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Logo_loading.png" />'
             const Response = await fetch(`http://127.0.0.1:4040/search?q=${SearchInput.value}`)
             const Data = await Response.json()
+            SearchList.innerHTML = ''
             console.log(Data)
             Data.forEach(object => {
                 const ListItem = document.createElement('div')
